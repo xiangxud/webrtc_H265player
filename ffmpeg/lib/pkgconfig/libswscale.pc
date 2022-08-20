@@ -1,0 +1,14 @@
+prefix=/home/develop/nightingale/src/modules/agent/web_client/FFmpeg/../decoder_wasm/ffmpeg
+exec_prefix=${prefix}
+libdir=/home/develop/nightingale/src/modules/agent/web_client/FFmpeg/../decoder_wasm/ffmpeg/lib
+includedir=/home/develop/nightingale/src/modules/agent/web_client/FFmpeg/../decoder_wasm/ffmpeg/include
+
+Name: libswscale
+Description: FFmpeg image rescaling library
+Version: 6.8.102
+Requires: libavutil >= 57.33.101
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lswscale -lm
+Libs.private: 
+Cflags: -I${includedir}

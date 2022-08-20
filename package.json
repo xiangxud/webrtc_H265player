@@ -1,0 +1,22 @@
+{
+  "name": "decoder_wasm",
+  "version": "1.0.0",
+  "description": "decoder wasm",
+  "main": "server.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goldvideo/decoder_wasm.git"
+  },
+  "author": "xuluying",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}

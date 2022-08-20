@@ -1,0 +1,14 @@
+prefix=/home/develop/nightingale/src/modules/agent/web_client/FFmpeg/../decoder_wasm/ffmpeg
+exec_prefix=${prefix}
+libdir=/home/develop/nightingale/src/modules/agent/web_client/FFmpeg/../decoder_wasm/ffmpeg/lib
+includedir=/home/develop/nightingale/src/modules/agent/web_client/FFmpeg/../decoder_wasm/ffmpeg/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 57.33.101
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil -pthread -lm -lX11
+Libs.private: 
+Cflags: -I${includedir}

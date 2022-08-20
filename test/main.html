@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8">
+<body>
+    <!-- <div style="margin: 20px;">
+      H264:
+        <input type="file" onchange="handleVideoFiles(this.files)" onclick="setDecoder(0)">
+    </div>
+    <div style="margin: 20px;">
+      H265:
+        <input type="file" onchange="handleVideoFiles(this.files)" onclick="setDecoder(1)">
+    </div>
+    <div style="margin: 20px;">
+      AudioContext:
+        <input type="file" onchange="handleAudioFiles(this.files)" onclick="setAudioDecoder(0)">
+    </div>
+    <div style="margin: 20px;">
+      MSE:
+        <input type="file" onchange="handleAudioFiles(this.files)" onclick="setAudioDecoder(1)">
+    </div> -->
+    <div class="row">
+      <form action="demo_form.html" method="get">
+        服务器名称: <input type="text"  name="servername" id="serverId" value="rtmpserver1">
+        拉 流  名 称: <input type="text"  name="streamname" id="streamId" value="kvs">
+        设 备  名 称: <input type="text"  name="devicename" id="deviceId" value=" ">
+         数 据  发 送：<input type="text"  name="msgout" id="controlInput"  value="msgout"><button type="button"  onclick="controlSend()" id="control-send">发送控制消息</button><br>
+        数 据  接 收：<input type="text"  name="msgin" id="control_output"  value="msgin"><br>
+      </form>
+
+    </div>  
+    <div style="margin: 20px;">
+      <button id="play" onclick="handleVideo()">Start Play</button>
+      <button id="stop" onclick="stopVideo()">stop Play</button>
+    </div>
+
+  <div style="margin-top: 10px">
+    <canvas id="playCanvas" width="1280" height="768"></canvas>
+  </div>
+
+  <script src="libffmpeg_264_265.js"></script>
+  <script src="video.js"></script>
+  <script src="audio.js"></script>
+  <script src="webgl.js"></script>
+  <script src="start.js"></script>
+</body>
+</html>
