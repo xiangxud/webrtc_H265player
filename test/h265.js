@@ -147,6 +147,7 @@ function initH265DC(pc,player) {
         bWorking=false;
 
     };
+}
 
 function handleUpdates(canvas, dc) {
     setInterval(function () {
@@ -154,5 +155,5 @@ function handleUpdates(canvas, dc) {
         dc.send(JSON.stringify({ type: "h265" })); // frame update request
         }
     }, 500);
-}
+};
 

@@ -86,7 +86,7 @@ var ICEServerkvm = [
     }, {
         urls: ["turn:192.168.0.18:3478"],
         //urls: ["turn:192.168.0.20:3478"],
-        username: "kvm",
+        username: "media",
         credential: "123456"
     }
 ];
