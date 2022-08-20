@@ -67,15 +67,14 @@ Decoder.prototype.decode=function(){
         Module.HEAPU8.set(typedArray, cacheBuffer);
         // totalSize += size
         // console.log("[" + (++readerIndex) + "] Read len = ", size + ", Total size = " + totalSize)
-        const t2 = new Date().getTime()-decodet1;
-        console.log("decode time:"+t2+" len:"+size);//+" data:"+typedArray.toString(16));
+
         Module._decodeData(cacheBuffer, size, pts++)
         if (cacheBuffer != null) {
             Module._free(cacheBuffer);
             cacheBuffer = null;
         }
         H265Frame.shift();
-        decodet1=new Date().getTime();
+
     }
     
 }
@@ -84,7 +83,7 @@ Decoder.prototype.startDecoding = function (interval) {
     if (this.decodeTimer) {
         clearInterval(this.decodeTimer);
     }
-    this.decodeTimer = setInterval(this.decode, interval);
+    this.decodeTimer = setInterval(this.decode, 0);//interval);
 };
 
 Decoder.prototype.pauseDecoding = function () {
@@ -155,6 +154,9 @@ Decoder.prototype.decode_seq=function() {
             d: obj
         };
         self.postMessage(objData, [objData.d.data.buffer]);
+        const t2 = new Date().getTime()-decodet1;
+        console.log("decode time:"+t2+" len:"+size);//+" data:"+typedArray.toString(16));
+        decodet1=new Date().getTime();
         // displayVideoFrame(obj);
     });
 
@@ -170,6 +172,7 @@ Decoder.prototype.decode_seq=function() {
         e: ret
     };
     self.postMessage(objData);
+
 
 }
 

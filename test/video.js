@@ -4,6 +4,8 @@ var player=null;
 
 function handleVideo() {
     player = new Worker("Player.js");
+    // H265transferworker = new Worker ("")
+
     startDeviceSession(player);
     player.onmessage = function (evt){
         var objData = evt.data;
@@ -21,7 +23,14 @@ function handleVideo() {
     player.postMessage(req);
 
 }
+function stopDecoder(){
+    var req = {
+        t: kendPlayerCoderReq,
+    };
+    player.postMessage(req);
+}
 function stopVideo(){
+    stopDecoder();
     endWebrtc();
     endMqtt();
 }

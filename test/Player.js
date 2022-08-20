@@ -14,7 +14,7 @@ function Player(){
     this.decoder_type = DECODER_H265;
     this.decoding = false;
     this.webrtcplayerState = playerStateIdle;
-    this.decodeInterval     = 5;
+    this.decodeInterval     = 3; //编码定时器
     this.urgent = false;
 
     this.frameBuffer = [];
@@ -129,7 +129,14 @@ Player.prototype.displayLoop = function() {
         }
     }
 };
-
+Player.prototype.stopDecoder = function() {
+     var req={
+       t: kPauseDecodingReq,
+     }
+     this.decoderworker.postMessage(req);
+    //  this.stopBuffering();
+     this.webrtcplayerState=playerStateIdle;
+};
 Player.prototype.renderVideoFrame = function (data) {
     // var self = this;
     var playFrame={
@@ -165,12 +172,17 @@ Player.prototype.processReq = function (req) {
         case kstartPlayerCoderReq:
             this.startDecoder();
             break;
+        case kendPlayerCoderReq:
+            this.stopDecoder();
+            break;
+    
         case kInitPlayerReq:
             this.displayLoop();
             break;           
         case ksendPlayerVideoFrameReq:
             this.onFrameData(req.d,req.l);
             break;
+
         default:
             this.logger.logError("Unsupport messsage " + req.t);
     }

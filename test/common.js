@@ -32,4 +32,9 @@ const kstartPlayerCoderReq      = 1;
 const ksendPlayerVideoFrameReq  = 2;
 
 const kplayeVideoFrame          = 3;
+const kendPlayerCoderReq        = 4;
+
+//H265Transferreq
+const kstartH265TransferReq     = 0;
+const kendH265TransferReq       = 1;
 

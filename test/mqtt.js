@@ -14,6 +14,7 @@ function getStreamWebrtc(player) {
     pc = new RTCPeerConnection({
             iceServers: ICEServerkvm,//ICEServer
     });
+    // initH265Transfer(pc,player);
     initH265DC(pc,player);
 	// Populate SDP field when finished gathering
 	pc.oniceconnectionstatechange = e => log(pc.iceConnectionState)
@@ -104,7 +105,7 @@ initMqtt = function(player) {
               break;
             case "error":
                 console.log("msg:",input.msg);
-                stopSession();
+                // stopSession();
                 break;
             case "answer":
                 var remoteSessionDescription = input.data;
@@ -143,6 +144,7 @@ function endMqtt() {
 }
 function endWebrtc(){
     stopH265();
+    // endH265Transfer();
     pc.close();
 }
 function sendCmdMsg(topic,cmdmsgtype,deviceid,msg,cmdmsg){

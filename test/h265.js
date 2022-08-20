@@ -69,7 +69,7 @@ function stopH265(){
 }
 var receivet1=new Date().getTime();
 function initH265DC(pc,player) {
-
+    console.log("initH265DC",Date());
     h265DC = pc.createDataChannel("h265");
     let bRecH265=false;
     // var ctx = canvas.getContext("2d");
