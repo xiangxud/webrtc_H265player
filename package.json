@@ -17,6 +17,7 @@
   "author": "xuluying",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "uglify-js": "^3.17.0"
   }
 }

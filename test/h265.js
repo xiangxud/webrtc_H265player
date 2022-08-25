@@ -68,19 +68,20 @@ function stopH265(){
     }
 }
 var receivet1=new Date().getTime();
+var bRecH265=false;
 function initH265DC(pc,player) {
     console.log("initH265DC",Date());
     h265DC = pc.createDataChannel("h265");
-    let bRecH265=false;
+
     // var ctx = canvas.getContext("2d");
     
     h265DC.onmessage = function (event) {
-
+        // console.log(bRecH265,":",event.data)
         if(bRecH265){
             if(isString(event.data)) {
                 if(event.data.indexOf("h265 end")!=-1){
                     bRecH265=false;
-               
+                    console.log(bRecH265,":",event.data)
                     if(h265datalen>0){
 
                         const t2 = new Date().getTime()-receivet1;
@@ -115,7 +116,7 @@ function initH265DC(pc,player) {
 
                 h265datalen+=event.data.byteLength;
                 packet++;
-                // console.log("reveive: "+packet+": t len"+h265datalen)
+                console.log("reveive: "+packet+": t len"+h265datalen)
                 return;
             }
 
@@ -133,10 +134,10 @@ function initH265DC(pc,player) {
     h265DC.onopen = function () {
         console.log("h265 datachannel open");
 
-        var req = {
-            t: kInitPlayerReq,
-        };
-        player.postMessage(req);
+        // var req = {
+        //     t: kInitPlayerReq,
+        // };
+        // player.postMessage(req);
 
         bWorking = true;
 

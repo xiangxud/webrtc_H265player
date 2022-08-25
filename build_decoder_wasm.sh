@@ -16,8 +16,14 @@ emcc decode_video.c ffmpeg/lib/libavcodec.a ffmpeg/lib/libavutil.a ffmpeg/lib/li
     -s TOTAL_MEMORY=${TOTAL_MEMORY} \
    	-s EXPORTED_FUNCTIONS="${EXPORTED_FUNCTIONS}" \
    	-s EXPORTED_RUNTIME_METHODS="['addFunction']" \
-		-s RESERVED_FUNCTION_POINTERS=14 \
+		-s RESERVED_FUNCTION_POINTERS=18 \
 		-s FORCE_FILESYSTEM=1 \
     -o dist/libffmpeg_$1.js
 
 echo "Finished Build"
+
+rm test/libffmpeg_$1.wasm 
+rm test/libffmpeg_$1.js
+
+cp dist/libffmpeg_$1.wasm ./test/
+cp dist/libffmpeg_$1.js ./test/

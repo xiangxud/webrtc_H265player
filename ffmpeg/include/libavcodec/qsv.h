@@ -21,7 +21,7 @@
 #ifndef AVCODEC_QSV_H
 #define AVCODEC_QSV_H
 
-#include <mfxvideo.h>
+#include <mfx/mfxvideo.h>
 
 #include "libavutil/buffer.h"
 
@@ -61,8 +61,6 @@ typedef struct AVQSVContext {
      * required by the encoder and the user-provided value nb_opaque_surfaces.
      * The array of the opaque surfaces will be exported to the caller through
      * the opaque_surfaces field.
-     *
-     * The caller must set this field to zero for oneVPL (MFX_VERSION >= 2.0)
      */
     int opaque_alloc;
 

@@ -21,6 +21,8 @@ const kDecodeFinishedEvt    = 8;
 const kRequestDataEvt       = 9;
 const kSeekToRsp            = 10;
 const kVideoParameters      = 11;
+const kVideoFrame_Missle    = 12;
+const kprodVideoFrame       = 13;
 
 //WebrtcPlayer states.
 const playerStateIdle           = 0;
@@ -37,4 +39,15 @@ const kendPlayerCoderReq        = 4;
 //H265Transferreq
 const kstartH265TransferReq     = 0;
 const kendH265TransferReq       = 1;
+
+//WASM decoder types
+const kDecoder_decodeer_js      = 0;
+const kDecoder_prod_h265_wasm_combine_js   = 1;
+const kDecoder_missile_decoder_js   =2;
+
+const MAX_FRAME_SIZE=10; 
+
+const DECODER_TYPE = kDecoder_decodeer_js;
+// const DECODER_TYPE = kDecoder_missile_decoder_js;
+// const DECODER_TYPE = kDecoder_prod_h265_wasm_combine_js;
 

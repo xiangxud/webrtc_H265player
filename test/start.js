@@ -5,15 +5,18 @@ function importScripts(scriptUrl){
   script.setAttribute("src", scriptUrl);
   document.body.appendChild(script);
 }
-importScripts("./parameter.js")
+
 importScripts("./common.js")
+importScripts("./parameter.js")
 importScripts("./mqtt.js")
-// importScripts("./webrtc.js")
+importScripts("./video.js")
+importScripts("./audio.js")
+importScripts("./webgl.js")
 importScripts("./datachannel.js")
 importScripts("./h265.js")
 importScripts("https://cdn.bootcdn.net/ajax/libs/mqtt/2.18.8/mqtt.min.js")
 // importScripts("./adapter-latest.js")
-{/* <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> */}
+
 function log(msg) {
   console.log(msg);
     // $("#loger").html(msg);

@@ -99,7 +99,24 @@ WebGLPlayer.prototype.initGL = function (options) {
     gl.u.bind(1, program, "UTexture");
     gl.v.bind(2, program, "VTexture");
 }
+WebGLPlayer.prototype.renderFrameyuv = function ( 
+    videoFrameY, videoFrameB, videoFrameR,
+    width, height) {
+    if (!this.gl) {
+        console.log("[ER] Render frame failed due to WebGL not supported.");
+        return;
+    }
 
+    var gl = this.gl;        
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.clearColor(0.0, 0.0, 0.0, 0.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.y.fill(width, height, videoFrameY);
+    gl.u.fill(width >> 1, height >> 1, videoFrameB);
+    gl.v.fill(width >> 1, height >> 1, videoFrameR);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
 WebGLPlayer.prototype.renderFrame = function (videoFrame, width, height, uOffset, vOffset) {
     if (!this.gl) {
         console.log("[ER] Render frame failed due to WebGL not supported.");

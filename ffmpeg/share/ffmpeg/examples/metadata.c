@@ -34,7 +34,7 @@
 int main (int argc, char **argv)
 {
     AVFormatContext *fmt_ctx = NULL;
-    const AVDictionaryEntry *tag = NULL;
+    AVDictionaryEntry *tag = NULL;
     int ret;
 
     if (argc != 2) {
