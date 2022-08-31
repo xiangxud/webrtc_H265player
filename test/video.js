@@ -51,8 +51,8 @@ function handleVideo() {
     switch(porotocol.value){
         case "webrtc":
         
-        startPlay(url.value);
-        rtrun;
+           startPlay(url.value);
+           return;
         case "mqtt":
             MqttServer=url.value;
             break;
