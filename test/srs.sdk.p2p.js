@@ -100,7 +100,13 @@ function SrsRtcPublisherAsync() {
     // @see https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/addStream#Migrating_to_addTrack
     self.ontrack = function (event) {
         // Add track to stream of SDK.
-        self.stream.addTrack(event.track);
+        // self.stream.addTrack(event.track);
+        console.log("ontrack", event.track.kind)
+        var el = document.createElement(event.track.kind);
+        el.srcObject = event.streams[0];
+        el.autoplay = true;
+        // document.getElementById("remote-video").appendChild(el);
+        el.controls = false; // 显示
     };
 
     // Internal APIs.
