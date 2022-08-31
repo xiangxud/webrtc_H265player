@@ -1,9 +1,9 @@
 var CHUNK_SIZE = 4096;
-var file;
-var filePos = 0;
+// var file;
+// var filePos = 0;
 var audioContext;
 var audioSource;
-var fileBuffer = [];
+var audiobuffer = [];
 var audioEl;
 var mediaSource;
 var sourceBuffer;
@@ -18,11 +18,11 @@ function setAudioDecoder(decoder) {
     audioDecoder = decoder
 }
 
-function handleAudioFiles(files) {
-    var file_list = files;
-    var file_idx = 0;
-    loadFile(file_list, file_idx);
-}
+// function handleAudioFiles(files) {
+//     var file_list = files;
+//     var file_idx = 0;
+//     loadFile(file_list, file_idx);
+// }
 
 function initWebAudio() {
     console.log('Init audio context')
@@ -48,7 +48,7 @@ function initMSE() {
 
 function sourceOpenCallback() {
     console.log('Media Source Ready')
-    sourceBuffer = mediaSource.addSourceBuffer('audio/aac')
+    sourceBuffer = mediaSource.addSourceBuffer('audio/ogg');//'audio/aac')
     sourceBuffer.addEventListener('updateend', updateEndCallback, false)
     loadNextChunk();
 }
@@ -89,8 +89,8 @@ function fastForword() {
 }
 
 function webAudioCallback() {
-    fileBuffer.push(this.result)
-    var audioBuffer = mergeBuffer(fileBuffer, filePos)
+    audiobuffer.push(this.result)
+    var audioBuffer = mergeBuffer(audiobuffer, filePos)
     console.log('File buffer size = ', audioBuffer.byteLength)
     if(!audioContext) {
         initWebAudio();
@@ -104,9 +104,9 @@ function webAudioCallback() {
     }, 100);
 }
 
-function scriptNodeCallback() {
-    fileBuffer.push(this.result)
-    var audioBuffer = mergeBuffer(fileBuffer, filePos)
+function scriptNodeCallback(data,len) {
+     audiobuffer.push(data)
+    var audioBuffer = mergeBuffer(data, len)
     console.log('File buffer size = ', audioBuffer.byteLength)
     if(!audioContext) {
         initWebAudio();
@@ -150,8 +150,8 @@ function scriptNodeCallback() {
     }, 100);
 }
 
-function mseCallback() {
-    fileBuffer.push(this.result)
+function mseCallback(data) {
+    audiobuffer.push(data)
     if(!sourceBuffer.updating) {
         console.log('load next buffer in mse call back')
         loadNextBuffer()
@@ -166,8 +166,8 @@ function mseCallback() {
 }
 
 function loadNextBuffer() {
-    if (fileBuffer.length) {
-        sourceBuffer.appendBuffer(fileBuffer.shift());
+    if (audiobuffer.length) {
+        sourceBuffer.appendBuffer(audiobuffer.shift());
     }
     if (filePos === file.size && !sourceBuffer.updating) {
         // else close the stream
@@ -183,11 +183,11 @@ function startMSEPlay() {
 }
 
 function loadNextChunk() {
-    var reader = new FileReader();
-    reader.onload = audioDecoder === DECODER_WEBAUDIO ? scriptNodeCallback : mseCallback
-    var i_stream_size = read_file_slice(reader, file, filePos, CHUNK_SIZE);
-    filePos += i_stream_size;
-    console.log('Load file size', i_stream_size)
+    // var reader = new FileReader();
+    // reader.onload = audioDecoder === DECODER_WEBAUDIO ? scriptNodeCallback : mseCallback
+    // var i_stream_size = read_file_slice(reader, file, filePos, CHUNK_SIZE);
+    // filePos += i_stream_size;
+    // console.log('Load file size', i_stream_size)
 }
 
 function appendBuffer(buffer1, buffer2) {

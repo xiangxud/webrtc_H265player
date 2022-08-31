@@ -7,7 +7,20 @@ var t = Date.now();
 function sleep(d){
 	while(Date.now - t <= d);
 }
-
+var bisOntrack = false;
+function OnTrack(pc){
+    if(bisOntrack) return;
+    bisOntrack=true;
+    pc.ontrack = function (event) {
+        console.log("ontrack", event.track.kind)
+        var el = document.createElement(event.track.kind);
+        el.srcObject = event.streams[0];
+        el.autoplay = true;
+        // document.getElementById("remote-video").appendChild(el);
+        el.controls = false; // 显示
+        // el.autoplay = true;
+        }
+}
 function getStreamWebrtc(player) {
 
 
@@ -15,9 +28,30 @@ function getStreamWebrtc(player) {
             iceServers: ICEServerkvm,//ICEServer
     });
     // initH265Transfer(pc,player);
-    initH265DC(pc,player);
+    if(bVideo) {
+        if(!bDecodeH264){
+           initH265DC(pc,player);
+        }else{
+            const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
+            OnTrack(pc)
+        }
+    }
+    if(bAudio) {
+    // initAudioDC(pc);
+        const { receiveraudio } = pc.addTransceiver('audio', { direction: 'recvonly' });
+        OnTrack(pc)
+    }
 	// Populate SDP field when finished gathering
-	pc.oniceconnectionstatechange = e => log(pc.iceConnectionState)
+	pc.oniceconnectionstatechange = e => {
+        log(pc.iceConnectionState)
+
+                var state ={
+                    t: kconnectStatusResponse,
+                    s: pc.connectionState
+                }
+                player.postMessage(state)
+
+    }
 
     pc.onicecandidate = event => {
             if (event.candidate === null) {
@@ -41,6 +75,7 @@ function getStreamWebrtc(player) {
                 }
                 if (bAudio) {
                     msgdata["audio"] = true;
+                    msgdata["mode"] = media_mode;
                 }
 
                 msgdata["serial"] = false;//true;

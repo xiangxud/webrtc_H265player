@@ -43,7 +43,8 @@ function uuid() {
 var subtopic = "server_cmd/" +SERVER_NAME+ "/"+ WEB_SEQID + "/#";//+"/"+deviceID //Control/00:13:14:01:D9:D5
 var pubtopic = "server_control" + "/" + SERVER_NAME;
 let bVideo=true;
-let bAudio=false;
+let bAudio=true;
+let bDecodeH264 = false; //H264直接用webrtc
 var bmqttStarted=false; 
 var bWebrtc = false;
 var bUseWebrtcP2P =true;//启动webrtc p2p 模式

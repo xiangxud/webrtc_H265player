@@ -17,6 +17,7 @@ var decoder_type = DECODER_H265;
 var pts=0;
 
 H265Frame =[];
+AudioFrame =[];
 function Decoder(){
 // this.timer=null;
 this.decodeTimer = null;
@@ -59,19 +60,29 @@ Decoder.prototype.uninitDecoder = function () {
     //     this.cacheBuffer = null;
     // }
 };
+const MIN_FRAME_FOR_DECODE=0
 var decodet1=new Date().getTime();
 Decoder.prototype.decode=function(){
-    if(H265Frame.length>0){
+    if(H265Frame.length>MIN_FRAME_FOR_DECODE){
+        // decodet1=new Date().getTime();
+        // var typedArray=H265Frame[0];//new Uint8Array(H265Frame[0]);
+
+        // var size = typedArray.length
+        // console.log("decode len: " + size)
+        // var cacheBuffer = Module._malloc(size);
+        // Module.HEAPU8.set(typedArray, cacheBuffer);
         decodet1=new Date().getTime();
         var typedArray=H265Frame[0];//new Uint8Array(H265Frame[0]);
-
-        var size = typedArray.length
+        var packet=typedArray.d;
+        var size = typedArray.size;
+        // console.log("decode len: " + size)
+        console.log("decode pts:",typedArray.pts," packet len:",size," H265Frame total",H265Frame.length)
         var cacheBuffer = Module._malloc(size);
-        Module.HEAPU8.set(typedArray, cacheBuffer);
+        Module.HEAPU8.set(packet, cacheBuffer);
         // totalSize += size
         // console.log("[" + (++readerIndex) + "] Read len = ", size + ", Total size = " + totalSize)
-
-        Module._decodeData(cacheBuffer, size, pts++)
+        // console.log(typedArray.toString(16));
+        Module._decodeData(cacheBuffer, size, typedArray.pts)
         if (cacheBuffer != null) {
             Module._free(cacheBuffer);
             cacheBuffer = null;
@@ -128,6 +139,14 @@ Decoder.prototype.displayVideoFrame = function displayVideoFrame(obj){
         // decodet1=new Date().getTime();
         // displayVideoFrame(obj);
 }
+IsGreyData = function(data) {
+    var isgray=false;
+    var len=data.length<100?data.length:100;
+    for(var i=0; i<len;i++){
+        isgray=data[i]===128?true:false;
+    }
+    return isgray;
+}
 Decoder.prototype.decode_seq=function() {
 
     var start_time = new Date();
@@ -135,6 +154,18 @@ Decoder.prototype.decode_seq=function() {
     var videoCallback = Module.addFunction(function (addr_y, addr_u, addr_v, stride_y, stride_u, stride_v, width, height, pts) {
         console.log("[%d]In video callback, size = %d * %d, pts = %d", ++videoSize, width, height, pts)
         let out_y = HEAPU8.subarray(addr_y, addr_y + stride_y * height)
+        // if(IsGreyData(out_y)===true) {
+        //     return;
+        // }
+        var isgray=false;
+        var len=out_y.length<100?out_y.length:100;
+        // for(var i=0; i<len;i++){
+        //     isgray=out_y[i]===128?true:false;
+        // }
+        // if( isgray === true) {
+        //     return;
+        // }
+        //if (out_y[0]===128 & out_y[0]===128 & out_y[0]===128 & out_y[0]===128
         let out_u = HEAPU8.subarray(addr_u, addr_u + (stride_u * height) / 2)
         let out_v = HEAPU8.subarray(addr_v, addr_v + (stride_v * height) / 2)
         let buf_y = new Uint8Array(out_y)
@@ -144,14 +175,15 @@ Decoder.prototype.decode_seq=function() {
         data.set(buf_y, 0)
         data.set(buf_u, buf_y.length)
         data.set(buf_v, buf_y.length + buf_u.length)
+
         var obj = {
+            s: pts,
             data: data,
             width,
             height
         }
         var objData = {
             t: kVideoFrame,
-            s: pts,
             d: obj
         };
         self.postMessage(objData, [objData.d.data.buffer]);
@@ -236,13 +268,27 @@ Decoder.prototype.decode_seq=function() {
 
 
 }
-Decoder.prototype.sendVideoFrame = function(data,len){
+Decoder.prototype.sendFrame = function(data,type){
 
-            var typedArray = new Uint8Array(data);
+    // var typedArray = {
+    //     pts: data.pts,
+    //     size: data.size,
+    //     d: new Uint8Array(data.packet)
+    //  }
+    var typedArray = {
+        pts: data.pts,
+        size: data.size,
+        d: data.packet//new Uint8Array(data.packet)
+     }
+            // var typedArray = new Uint8Array(data.packet);
             // if(H265Frame.length>MAX_FRAME_SIZE){
             //     H265Frame.shift();
             // }
-            H265Frame.push(typedArray)
+            if(type==="VIDEO"){
+               H265Frame.push(typedArray)
+            }else if(type==="AUDIO"){
+                AUDIOFrame.push(typedArray)
+             }
             // var size = typedArray.length
             // var cacheBuffer = Module._malloc(size);
             // Module.HEAPU8.set(typedArray, cacheBuffer);
@@ -299,7 +345,12 @@ Decoder.prototype.processReq = function (req) {
             this.pauseDecoding();
             break;
         case kFeedDataReq:
-            this.sendVideoFrame(req.d);
+            this.sendFrame(req.d,req.type);
+            // if(req.type==="VIDEO"){
+            //   this.sendVideoFrame(req.d);
+            // }else{
+            //    this.sendAudioFrame(req.d);
+            // }
             break;
         // case kSeekToReq:
         //     this.seekTo(req.ms);

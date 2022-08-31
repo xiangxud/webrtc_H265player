@@ -8,7 +8,7 @@ self.importScripts("common.js");
 // var USE_MISSILE = false;
 // var decoder_type;
 // var DECODER_TYPE = kDecoder_decodeer_js;
-// var DECODER_TYPE = kDecoder_prod_h265_wasm_combine_js;
+// var DECODER_TYPE = kDecoder_wx_h265_wasm_combine_js;
 var webglPlayer, canvas, videoWidth, videoHeight, yLength, uvLength;
 var LOG_LEVEL_JS = 0;
 var LOG_LEVEL_WASM = 1;
@@ -20,7 +20,7 @@ function Player(){
     this.decoder_type = DECODER_TYPE;//DECODER_H265;
     this.decoding = false;
     this.webrtcplayerState = playerStateIdle;
-    this.decodeInterval     = 3; //编码定时器
+    this.decodeInterval     = 5; //编码定时器
     this.urgent = false;
     this.destroied = false;
     this.decoderworker=null;
@@ -35,6 +35,30 @@ Player.prototype.startDecoder=function(decoder_type){
     var self = this;
     self.setDecoder(decoder_type);
     switch(decoder_type){
+        case kDecoder_simd_decoder_js:
+            self.decoderworker=new Worker("decoder_simd.js");  
+            var req = {
+                t: kInitDecoderReq,
+            };
+            self.decoderworker.postMessage(req);
+            self.decoderworker.onmessage=function (evt) {
+                var objData = evt.data;
+                switch (objData.t) {
+                    case kInitDecoderRsp:
+                        self.onInitDecoder(objData);
+                        break;
+                    case kOpenDecoderRsp:
+                        self.onOpenDecoder(objData);
+                        break;
+                    case kVideoFrame:
+                        self.onVideoFrame(objData.d);
+                        break;
+
+                    default:
+                        console.log("Unsupport messsage " + req.t);     
+                }
+            }  
+            break;
         case kDecoder_decodeer_js:
             self.decoderworker=new Worker("decoder.js");  
             var req = {
@@ -49,35 +73,43 @@ Player.prototype.startDecoder=function(decoder_type){
                         break;
                     case kOpenDecoderRsp:
                         self.onOpenDecoder(objData);
-                        // this.displayLoop();
-                        // var req = {
-                        //     t: kInitPlayerReq,
-                        // };
-                        // self.postMessage(req);
+
                         break;
                     case kVideoFrame:
-                        self.onVideoFrame(objData);
+                        self.onVideoFrame(objData.d);
                         break;
-                    // case kVideoFrame_Missle:
-                    //     self.onVideoFrame_Missle(objData);
-                    //     break;    
-                    // case kprodVideoFrame:
-                    //     self.onVideoFrame_Prod(objData);
-                    //     break;
-                    // case "decode":
-                    //     console.log("decode"+objData)
-                    //     break;    
                     default:
                         console.log("Unsupport messsage " + req.t);     
                 }
             }  
             break;
         // this.decoderworker=new Worker("decoder_missle.js");
-        case kDecoder_prod_h265_wasm_combine_js:
+        case kDecoder_wx_h265_wasm_combine_js:
             // this.decoderworker=new Worker("prod_decoder.js");  
             self.Module = {};  
-            self.decoderworker=new Worker("glue.js");//prod.h265.wasm.combine.js");
-            self.SetProdDecoder(self.decoderworker,self);
+            self.decoderworker=new Worker("decoder_wx.js");
+            // self.SetWxDecoder(self.decoderworker,self);
+            var req = {
+                t: kInitDecoderReq,
+            };
+            self.decoderworker.postMessage(req);
+            self.decoderworker.onmessage=function (evt) {
+                var objData = evt.data;
+                switch (objData.t) {
+                    case kInitDecoderRsp:
+                        self.onInitDecoder(objData);
+                        break;
+                    case kOpenDecoderRsp:
+                        self.onOpenDecoder(objData);
+                        break;
+                    case kVideoFrame:
+                        self.onVideoFrame(objData);
+                        break;
+
+                    default:
+                        console.log("Unsupport messsage " + req.t);     
+                }
+            }  
             break;
         case kDecoder_missile_decoder_js:
             self.decoderworker=new Worker("decoder_missle.js");//prod.h265.wasm.combine.js");
@@ -181,7 +213,7 @@ Player.prototype.InitMissleDecoder =function(){
 //         }
 //     }
 // }
-Player.prototype.SetProdDecoder = function (worker,self){
+Player.prototype.SetWxDecoder = function (worker,self){
     worker.onmessage = function(msg){              // 收到胶水代码返回来的消息的处理方式
         var data = msg.data;
         var decodet1=new Date().getTime();
@@ -264,18 +296,31 @@ Player.prototype.reqOpenDecoder=function(){
     };
     this.decoderworker.postMessage(req);
 }
-Player.prototype.onFrameData = function (data, len) {
+Player.prototype.onFrameData = function (data, len,type) {
     // console.log("Got data bytes=" + start + "-" + end + ".");
-    if(this.decoder_type===kDecoder_prod_h265_wasm_combine_js){
+    if(this.decoder_type===kDecoder_wx_h265_wasm_combine_js){
         this.decode(data);
     }else{
         var objData = {
             t: kFeedDataReq,
+            type:type,
             d: data
         };
-        this.decoderworker.postMessage(objData, [objData.d]);
+        this.decoderworker.postMessage(objData, [objData.d.packet.buffer]); //见h265dc.js
     }
 }
+// Player.prototype.onFrameData = function (data, len) {
+//     // console.log("Got data bytes=" + start + "-" + end + ".");
+//     if(this.decoder_type===kDecoder_wx_h265_wasm_combine_js){
+//         this.decode(data);
+//     }else{
+//         var objData = {
+//             t: kFeedDataReq,
+//             d: data
+//         };
+//         this.decoderworker.postMessage(objData, [objData.d.packet]); //见h265.js
+//     }
+// }
 Player.prototype.startBuffering = function () {
     this.buffering = true;
     this.showLoading();
@@ -292,21 +337,22 @@ Player.prototype.displayVideoFrame = function (frame) {
 
     var audioTimestamp=0;
     var delay=0
-    // console.log("displayVideoFrame delay=" + delay + "=" + " " + frame.s  + " - (" + audioCurTs  + " + " + this.beginTimeOffset + ")" + "->" + audioTimestamp);
+    console.log("displayVideoFrame" );//delay=" + delay + "=" + " " + frame.s  + " - (" + audioCurTs  + " + " + this.beginTimeOffset + ")" + "->" + audioTimestamp);
 
     if (audioTimestamp <= 0 || delay <= 0) {
-        this.renderVideoFrame(frame.d);
+        this.renderVideoFrame(frame);
         return true;
     }
     return false;
 };
 
 Player.prototype.displayLoop = function() {
-    console.log("displayLoop")
+    // console.log("displayLoop")
     if (this.webrtcplayerState !== playerStateIdle) {
         requestAnimationFrame(this.displayLoop.bind(this));
     }
     if(this.frameBuffer.length>0){
+        console.log("displayLoop ready to display: ",this.frameBuffer.length)
         var frame = this.frameBuffer[0];
         if (this.displayVideoFrame(frame)) {
             this.frameBuffer.shift();
@@ -334,6 +380,13 @@ Player.prototype.renderVideoFrame = function (data) {
     self.postMessage(playFrame,[playFrame.d.data.buffer])
 
 };
+Player.prototype.onNetStatus = function (status){
+    var playStatus={
+        t: kplaterNetStatus,
+        s: status
+    }
+    self.postMessage(playStatus)
+}
 Player.prototype.getBufferTimerLength = function() {
     if (!this.frameBuffer || this.frameBuffer.length == 0) {
         return 0;
@@ -347,7 +400,7 @@ Player.prototype.bufferFrame = function (frame) {
     // If not decoding, it may be frame before seeking, should be discarded.
 
     this.frameBuffer.push(frame);
-     console.log("bufferFrame pts:" + frame.s+" w:" + frame.d.width + ", h: " + frame.d.height);
+     console.log("bufferFrame pts:" + frame.s+" w:" + frame.width + ", h: " + frame.height);
 
 }
 Player.prototype.onVideoFrame = function (frame) {
@@ -373,9 +426,14 @@ Player.prototype.processReq = function (req) {
             this.displayLoop();
             break;           
         case ksendPlayerVideoFrameReq:
-            this.onFrameData(req.d,req.l);
+            this.onFrameData(req.d,req.l,"VIDEO");
             break;
-
+        case ksendPlayerAudioFrameReq:
+            this.onFrameData(req.d,req.l,"AUDIO");
+            break;
+        case kconnectStatusResponse:
+            this.onNetStatus(req.s);
+            break;    
         default:
             console.log("Unsupport messsage " + req.t);
     }

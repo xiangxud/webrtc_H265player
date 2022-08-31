@@ -32,9 +32,11 @@ const playerStatePausing        = 2;
 const kInitPlayerReq            = 0;
 const kstartPlayerCoderReq      = 1;
 const ksendPlayerVideoFrameReq  = 2;
-
-const kplayeVideoFrame          = 3;
-const kendPlayerCoderReq        = 4;
+const ksendPlayerAudioFrameReq  = 3;
+const kconnectStatusResponse    = 4;
+const kplayeVideoFrame          = 5;
+const kendPlayerCoderReq        = 6;
+const kplaterNetStatus          = 7;
 
 //H265Transferreq
 const kstartH265TransferReq     = 0;
@@ -42,12 +44,15 @@ const kendH265TransferReq       = 1;
 
 //WASM decoder types
 const kDecoder_decodeer_js      = 0;
-const kDecoder_prod_h265_wasm_combine_js   = 1;
+const kDecoder_wx_h265_wasm_combine_js   = 1;
 const kDecoder_missile_decoder_js   =2;
+const kDecoder_simd_decoder_js   =3;
 
-const MAX_FRAME_SIZE=10; 
-
-const DECODER_TYPE = kDecoder_decodeer_js;
-// const DECODER_TYPE = kDecoder_missile_decoder_js;
-// const DECODER_TYPE = kDecoder_prod_h265_wasm_combine_js;
+const MAX_FRAME_SIZE=60; 
+const MAX_DELETE_FRAME_SIZE=1000;
+//解码器类型定义
+const DECODER_TYPE = kDecoder_simd_decoder_js; //ffmpeg simd 优化
+// const DECODER_TYPE = kDecoder_decodeer_js; //ffmpeg decoder 
+// const DECODER_TYPE = kDecoder_missile_decoder_js; //小老虎解码器
+// const DECODER_TYPE = kDecoder_wx_h265_wasm_combine_js; //Wxplayer 解码器
 

@@ -6,7 +6,17 @@ var player=null;
 function handleVideo() {
     player = new Worker("Player.js");
     // H265transferworker = new Worker ("")
-
+    var el = document.getElementById("btnPlayVideo");
+    // var currentState = self.player.getState();
+    // if (currentState == playerStatePlaying) {
+        // el.src = "img/play.png";
+    // } else {
+    // el.src = "img/pause.png";
+    // }
+    // if(bAudio){
+    //     setAudioDecoder(1) //mse 0 contex
+    //     playAudio();
+    // }
     startDeviceSession(player);
     player.onmessage = function (evt){
         var objData = evt.data;
@@ -18,6 +28,9 @@ function handleVideo() {
               webgldisplayVideoFrame(objData.d);
             }
             break;
+        case kplaterNetStatus:
+            netstatus(objData.s)
+            break;    
         default:
             break;
         }    
@@ -27,7 +40,13 @@ function handleVideo() {
         decoder_type: DECODER_TYPE
     };
     player.postMessage(req);
+    el.src = "img/pause.png";
 
+}
+function netstatus(status){
+   if(status==="disconnected"){
+    stopVideo();
+   }
 }
 function stopDecoder(){
     var req = {
@@ -39,6 +58,23 @@ function stopVideo(){
     stopDecoder();
     endWebrtc();
     endMqtt();
+    var el = document.getElementById("btnPlayVideo");
+    // var currentState = self.player.getState();
+    // if (currentState == playerStatePlaying) {
+    el.src = "img/play.png";
+    // } else {
+    // el.src = "img/pause.png";
+}
+
+function fullscreen(){
+    if(!webglPlayer) {
+        const canvasId = "playCanvas";
+        canvas = document.getElementById(canvasId);
+        webglPlayer = new WebGLPlayer(canvas, {
+            preserveDrawingBuffer: false
+        });
+    }
+    webglPlayer.fullscreen();
 }
 //用missle解码器
 // var USE_MISSILE = false;

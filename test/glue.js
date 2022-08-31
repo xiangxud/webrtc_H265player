@@ -46,7 +46,7 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN ANY WAY CONNECTION WITH THE
 LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE LICENSED WORK.
 *********************************************************/
-self.importScripts("prod.h265.wasm.js");
+// self.importScripts("prod.h265.wasm.js");
 var supportSharedBuffer = false;
 try {
   supportSharedBuffer = !!new SharedArrayBuffer(0);
