@@ -1,9 +1,38 @@
 
 var webglPlayer, canvas, videoWidth, videoHeight, yLength, uvLength;
 var player=null;
+var sdk = null; // Global handler to do cleanup when replaying.
 // var DECODER_TYPE = kDecoder_decodeer_js;
 // var DECODER_TYPE = kDecoder_prod_h265_wasm_combine_js;
+function startPlay(url) {
+       
+   if(url===undefined){
+     return;
+   } 
+    // Close PC when user replay.
+    if (sdk) {
+        sdk.close();
+    }
+    sdk = new SrsRtcPlayerAsync();
+
+    // https://webrtc.org/getting-started/remote-streams
+//     $('#rtc_media_player').prop('srcObject', sdk.stream);
+//         var url = $("#txt_url").val();
+//    // parse_webrtc(url);
+    sdk.play(url).then(function(session){
+        //  console.log("play url ",$("#txt_url").val());
+        //  $('#datachannel_form').show();
+    }).catch(function (reason) {
+        sdk.close();
+    });
+};
 function handleVideo() {
+    var porotocol=document.getElementById("protocol");
+    if(porotocol.val==="webrtc"){
+        var url=document.getElementById("inputUrl");
+        startPlay(url);
+        rtrun;
+    }
     player = new Worker("Player.js");
     // H265transferworker = new Worker ("")
     var el = document.getElementById("btnPlayVideo");

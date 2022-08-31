@@ -2,55 +2,27 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>WASM TEST</title>
+    <title>Webrtc IPC H265/H264 Player</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="apple-touch-fullscreen" content="yes" />
     <meta name="format-detection" content="telephone=no, email=no" />
     <link rel="stylesheet" href="styles/style.css">
-    <text> webrtc datachannel H265 Player Demo 2022</text> 
   </head>
 <body>
-    <!-- <div style="margin: 20px;">
-      H264:
-        <input type="file" onchange="handleVideoFiles(this.files)" onclick="setDecoder(0)">
-    </div>
-    <div style="margin: 20px;">
-      H265:
-        <input type="file" onchange="handleVideoFiles(this.files)" onclick="setDecoder(1)">
-    </div>
-    <div style="margin: 20px;">
-      AudioContext:
-        <input type="file" onchange="handleAudioFiles(this.files)" onclick="setAudioDecoder(0)">
-    </div>
-    <div style="margin: 20px;">
-      MSE:
-        <input type="file" onchange="handleAudioFiles(this.files)" onclick="setAudioDecoder(1)">
-    </div> -->
-     <div class="row">
-      <form action="demo_form.html" method="get">
-
-        服务器名称: <input type="text"  name="servername" id="serverId" value="rtmpserver1">
-        拉 流  名 称: <input type="text"  name="streamname" id="streamId" value="kvs">
-        <!-- 设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="0A:2A:BE:6C:03:2E"> -->
-        设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="4E:7B:BF:71:D6:B4">
-        
-         数 据  发 送：<input type="text"  name="msgout" id="controlInput"  value="msgout"><button type="button"  onclick="controlSend()" id="control-send">发送控制消息</button><br>
-        数 据  接 收：<input type="text"  name="msgin" id="control_output"  value="msgin"><br>
-      </form>
-     </div>
-      <div class="container" id="videoPlayer">
+    <div class="container" id="videoPlayer">
         <div class="sideBar">
             <span class="no-padding">
                 <img src="img/home.png" class="left" id="btnHome" title="Visit My Homepage" onclick="window.open('https://blog.csdn.net/superxxd')" />
             </span>
             <div id="input">
                 <select id="protocol" onchange="onSelectProto()">
+                    <option value="webrtc">WEBRTC</option>
                     <option value="http">HTTP</option>
                     <option value="ws">WS</option>
                     <option value="httpFlv">HTTP-FLV</option>
                 </select>
-                <input type="text" id="inputUrl" style="width:300px"/>
+                <input type="text" id="inputUrl" value="webrtc://192.168.0.4:1988/live/livestream" style="width:300px"/>
             </div>
         </div>
         <div class="canvasDiv">
@@ -90,8 +62,25 @@
             </span>
         </div>
     </div>
-    <div id="footer">Copyright &copy; 2022 xiangxudong.All rights reserved.</div>
-    </div>  
+    <div><style type="text/css">
+      div{width:800px;height:280px;margin:10px auto;color:rgb(9, 32, 95);font-size:16px;}
+      .box1{background: #71a879;text-align: center;}
+    </style>
+    
+    <div class="row">
+      <form action="demo_form.html" method="get">
+        服务器名称: <input type="text"  name="servername" id="serverId" value="rtmpserver1">
+        拉 流  名 称: <input type="text"  name="streamname" id="streamId" value="kvs">
+        <!-- 设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="0A:2A:BE:6C:03:2E"> -->
+        设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="4E:7B:BF:71:D6:B4"><br>
+        数 据  发 送：<input type="text"  name="msgout" id="controlInput"  value="msgout"><button type="button"  onclick="controlSend()" id="control-send">发送控制消息</button><br>
+        数 据  接 收：<input type="text"  name="msgin" id="control_output"  value="msgin"><br>
+      </form>
+     </div>
+    </div>
+  </div>
+  <div id="footer">Copyright &copy; 2022 xiangxudong.All rights reserved.webrtc datachannel H265 Player Demo 2022</div>
+  </div>  
     <!-- <div style="margin: 20px;">
       <button id="play" onclick="handleVideo()">Start Play</button>
       <button id="stop" onclick="stopVideo()">stop Play</button>
