@@ -19,8 +19,8 @@ function startPlay(url) {
 //     $('#rtc_media_player').prop('srcObject', sdk.stream);
 //         var url = $("#txt_url").val();
 //    // parse_webrtc(url);
-    sdk.play(url).then(function(session){
-        //  console.log("play url ",$("#txt_url").val());
+    sdk.play(url.value).then(function(session){
+         console.log("play url ",url.value);
         //  $('#datachannel_form').show();
     }).catch(function (reason) {
         sdk.close();
@@ -32,7 +32,7 @@ function onSelectProto(){
     switch(porotocol.value){
         case "webrtc":
         url.value="webrtc://192.168.0.4:1988/live/livestream"
-        //startPlay(url);
+        startPlay(url);
         break;
         case "mqtt":
             url.value="ws://192.168.0.18:8083/mqtt"
