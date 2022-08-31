@@ -39,7 +39,7 @@ var h265DC;
 // var h265DC4;
 var bWorking=false;
 var h265dataFrame=[];
-var h265data;
+var h265data=null;
 // var h265data2=null;
 // var h265data3=null;
 // var h265data4=null;
@@ -132,8 +132,12 @@ var receivet1=new Date().getTime();
 var bRecH265=false;
 function initH265DC(pc,player) {
     console.log("initH265DC",Date());
+    bFindFirstKeyFrame=false;
+    bRecH265=false;
+    isKeyFrame=false;
+    receivet1=new Date().getTime();
     h265DC = pc.createDataChannel("h265");
-
+  
     // var ctx = canvas.getContext("2d");
     
     h265DC.onmessage = function (event) {
@@ -141,7 +145,7 @@ function initH265DC(pc,player) {
         if(bRecH265){
             if(isString(event.data)) {
                 console.log("reveive: "+event.data)
-                if(event.data.indexOf("h265 end")!=-1){
+                if(event.data.indexOf("h265 end")!==-1){
                     bRecH265=false;
                     // console.log("frame ok",":",event.data," len:"+h265datalen)
                     if(h265datalen>0){
@@ -191,7 +195,7 @@ function initH265DC(pc,player) {
                     return;
                 }
             }else{
-                if (h265data != null) {
+                if (h265data !== null) {
 
                     h265data=appendBuffer(h265data,event.data);
                 } else if (event.data.byteLength < expectLength) {
@@ -213,7 +217,7 @@ function initH265DC(pc,player) {
         if(isString(event.data)) {
             let startstring = event.data
             // console.log("reveive: "+startstring)
-            if(startstring.indexOf("h265 start")!=-1){
+            if(startstring.indexOf("h265 start")!==-1){
             console.log(event.data );
             const startarray=startstring.split(",");
             //	startstr := "h265 start ,FrameType:" + frametypestr + ",Packetslen:" + strconv.Itoa(glength) + ",packets:" + strconv.Itoa(count) + ",rem:" + strconv.Itoa(rem)

@@ -26,12 +26,38 @@ function startPlay(url) {
         sdk.close();
     });
 };
+function onSelectProto(){
+    var porotocol=document.getElementById("protocol");
+    var url=document.getElementById("inputUrl");
+    switch(porotocol.value){
+        case "webrtc":
+        url.value="webrtc://192.168.0.4:1988/live/livestream"
+        //startPlay(url);
+        break;
+        case "mqtt":
+            url.value="ws://192.168.0.18:8083/mqtt"
+            break;
+        default:
+            return;    
+    }
+}
 function handleVideo() {
     var porotocol=document.getElementById("protocol");
-    if(porotocol.val==="webrtc"){
-        var url=document.getElementById("inputUrl");
-        startPlay(url);
+    var url=document.getElementById("inputUrl");
+    if(url.value===""){
+        alert("Please input your url addr");
+        return;
+    }
+    switch(porotocol.value){
+        case "webrtc":
+        
+        startPlay(url.value);
         rtrun;
+        case "mqtt":
+            MqttServer=url.value;
+            break;
+        default:
+            return;    
     }
     player = new Worker("Player.js");
     // H265transferworker = new Worker ("")

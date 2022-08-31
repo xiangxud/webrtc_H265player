@@ -84,7 +84,7 @@ Decoder.prototype.decode=function(){
         Module.HEAPU8.set(packet, cacheBuffer);
 //void  VideoDecoder::decode(string input, unsigned int isKeyFrame, unsigned int timestamp)
         Module._decode(cacheBuffer,size,typedArray.iskeyframe,typedArray.pts);
-        if (cacheBuffer != null) {
+        if (cacheBuffer !== null) {
             Module._free(cacheBuffer);
             cacheBuffer = null;
         }

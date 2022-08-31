@@ -10,6 +10,18 @@
     <link rel="stylesheet" href="styles/style.css">
   </head>
 <body>
+     
+  <!-- <div class="row">
+    <form action="demo_form.html" method="get">
+      服务器名称: <input type="text"  name="servername" id="serverId" value="rtmpserver1">
+      拉 流  名 称: <input type="text"  name="streamname" id="streamId" value="kvs">
+      设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="0A:2A:BE:6C:03:2E"> 
+      设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="4E:7B:BF:71:D6:B4"><br>
+      数 据  发 送：<input type="text"  name="msgout" id="controlInput"  value="msgout"><button type="button"  onclick="controlSend()" id="control-send">发送控制消息</button><br>
+      数 据  接 收：<input type="text"  name="msgin" id="control_output"  value="msgin"><br>
+    </form>
+   </div> -->
+
     <div class="container" id="videoPlayer">
         <div class="sideBar">
             <span class="no-padding">
@@ -18,11 +30,14 @@
             <div id="input">
                 <select id="protocol" onchange="onSelectProto()">
                     <option value="webrtc">WEBRTC</option>
+                    <option value="mqtt">MQTT</option>
                     <option value="http">HTTP</option>
                     <option value="ws">WS</option>
                     <option value="httpFlv">HTTP-FLV</option>
                 </select>
                 <input type="text" id="inputUrl" value="webrtc://192.168.0.4:1988/live/livestream" style="width:300px"/>
+                设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="4E:7B:BF:71:D6:B4" style="width:100px"/>
+                拉 流  名 称: <input type="text"  name="streamname" id="streamId" value="metartc" style="width:100px"/>
             </div>
         </div>
         <div class="canvasDiv">
@@ -61,24 +76,7 @@
                 <img src="img/fullscreen.png" class="right" id="btnFullscreen" onclick="fullscreen()" />
             </span>
         </div>
-    </div>
-    <div><style type="text/css">
-      div{width:800px;height:280px;margin:10px auto;color:rgb(9, 32, 95);font-size:16px;}
-      .box1{background: #71a879;text-align: center;}
-    </style>
-    
-    <div class="row">
-      <form action="demo_form.html" method="get">
-        服务器名称: <input type="text"  name="servername" id="serverId" value="rtmpserver1">
-        拉 流  名 称: <input type="text"  name="streamname" id="streamId" value="kvs">
-        <!-- 设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="0A:2A:BE:6C:03:2E"> -->
-        设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="4E:7B:BF:71:D6:B4"><br>
-        数 据  发 送：<input type="text"  name="msgout" id="controlInput"  value="msgout"><button type="button"  onclick="controlSend()" id="control-send">发送控制消息</button><br>
-        数 据  接 收：<input type="text"  name="msgin" id="control_output"  value="msgin"><br>
-      </form>
-     </div>
-    </div>
-  </div>
+    </div> 
   <div id="footer">Copyright &copy; 2022 xiangxudong.All rights reserved.webrtc datachannel H265 Player Demo 2022</div>
   </div>  
     <!-- <div style="margin: 20px;">
