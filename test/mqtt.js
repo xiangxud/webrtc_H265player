@@ -14,6 +14,21 @@ function OnTrack(pc){
     pc.ontrack = function (event) {
         console.log("ontrack", event.track.kind)
         var el = document.createElement(event.track.kind);
+        document.body.appendChild(el);
+
+//属性width height autoplay id type src，也可以通过userVideo.setAttribute('type','video/mp4');来设置
+        if(event.track.kind==="video"){
+            const canvasId = "playCanvas";
+            canvas = document.getElementById(canvasId);
+            var offsetY = canvas.offsetTop;
+            var offsetX = canvas.offsetLeft;
+            el.offsetTop = offsetY;
+            el.offsetLeft = offsetX;
+            el.width = canvas.width;
+            el.height = canvas.height;
+            el.autoplay = true;
+            el.id = 'metaRTCVideo';
+        }
         el.srcObject = event.streams[0];
         el.autoplay = true;
         // document.getElementById("remote-video").appendChild(el);
