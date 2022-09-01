@@ -173,6 +173,10 @@ pc.onicecandidate = event => {
             console.log("Generated offer: ", data);
             Ajax.post(conf.apiUrl, offer.sdp+"}", function(res){
                 	console.log('返回的数据:',res)
+                    pc.setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: res.sdp}));
+                    // await self.pc.setRemoteDescription(
+                    //     new RTCSessionDescription({type: 'answer', sdp: session.sdp})
+                    // );
                 	// ....
                 })
             // ajax({
