@@ -300,7 +300,7 @@ function SrsRtcPlayerAsync() {
 	}
 	datachannel.onmessage = function(event) {
 	  console.log("receive message: ", event.data);
-	  $('#datachannel_recv').val(event.data);
+	//   $('#datachannel_recv').val(event.data);
 	}
 	datachannel.onerror=function(event) {
 	  console.log("datachannel error: ", event.data);
@@ -348,21 +348,37 @@ function SrsRtcPlayerAsync() {
             };
             console.log("Generated offer: ", data);
 			//text/plain application/json
-            $.ajax({
-                type: "POST", url: conf.apiUrl, data: offer.sdp+"}",
-                 contentType:'text/plain', dataType: 'json',
-                crossDomain:true         
-            }).done(function(data) {
-               
-                if (data.code) {
-                    reject(data); return;
-                }
-				console.log("Got sdp: ", data.sdp);
-                resolve(data);
+            // tools.ajaxPost(conf.apiUrl, offer.sdp+"}", function(res){
+            //     console.log('返回的数据:',res)
+            //     if (res.code) {
+            //         reject(daresta); return;
+            //     }
+			// 	console.log("Got sdp: ", res.sdp);
+            //     resolve(res);
+            // })
+            // let data = {
+            //     data: offer.sdp+"}"
+            // }
+            // Ajax.post(conf.apiUrl, data, function(res){
+                // 	console.log('返回的数据:',res)
+                // 	// ....
+                // })
                 
-            }).fail(function(reason){
-                reject(reason);
-            });
+            // $.ajax({
+            //     type: "POST", url: conf.apiUrl, data: offer.sdp+"}",
+            //      contentType:'text/plain', dataType: 'json',
+            //     crossDomain:true         
+            // }).done(function(data) {
+               
+            //     if (data.code) {
+            //         reject(data); return;
+            //     }
+			// 	console.log("Got sdp: ", data.sdp);
+            //     resolve(data);
+                
+            // }).fail(function(reason){
+            //     reject(reason);
+            // });
         });
         await self.pc.setRemoteDescription(
             new RTCSessionDescription({type: 'answer', sdp: session.sdp})

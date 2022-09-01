@@ -18,6 +18,10 @@ importScripts("./h265dc.js")
 importScripts("https://cdn.bootcdn.net/ajax/libs/mqtt/2.18.8/mqtt.min.js")
 importScripts("adapter-7.4.0.min.js")
 importScripts("srs.sdk.p2p.js")
+importScripts("http.js")
+importScripts("metaRTC.js")
+// importScripts("miniAjax.js")
+// importScripts("jquery-1.10.2.min.js")
 
 // importScripts("./adapter-latest.js")
 

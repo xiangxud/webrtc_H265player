@@ -6,25 +6,27 @@ var sdk = null; // Global handler to do cleanup when replaying.
 // var DECODER_TYPE = kDecoder_prod_h265_wasm_combine_js;
 function startPlay(url) {
        
-   if(url===undefined){
+   if(url===undefined||url.value===""){
+    alert("url is null")
      return;
    } 
-    // Close PC when user replay.
-    if (sdk) {
-        sdk.close();
-    }
-    sdk = new SrsRtcPlayerAsync();
+   StartMetaRTC(url,player)
+//     // Close PC when user replay.
+//     if (sdk) {
+//         sdk.close();
+//     }
+//     sdk = new SrsRtcPlayerAsync();
 
-    // https://webrtc.org/getting-started/remote-streams
-//     $('#rtc_media_player').prop('srcObject', sdk.stream);
-//         var url = $("#txt_url").val();
-//    // parse_webrtc(url);
-    sdk.play(url.value).then(function(session){
-         console.log("play url ",url.value);
-        //  $('#datachannel_form').show();
-    }).catch(function (reason) {
-        sdk.close();
-    });
+//     // https://webrtc.org/getting-started/remote-streams
+//     // $('#rtc_media_player').prop('srcObject', sdk.stream);
+// //         var url = $("#txt_url").val();
+// //    // parse_webrtc(url);
+//     sdk.play(url.value).then(function(session){
+//          console.log("play url ",url.value);
+//         //  $('#datachannel_form').show();
+//     }).catch(function (reason) {
+//         sdk.close();
+//     });
 };
 function onSelectProto(){
     var porotocol=document.getElementById("protocol");
