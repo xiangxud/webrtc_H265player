@@ -28,6 +28,11 @@ function getStreamWebrtc(player) {
             iceServers: ICEServerkvm,//ICEServer
     });
     // initH265Transfer(pc,player);
+    if(bAudio) {
+    // initAudioDC(pc);
+        const { receiveraudio } = pc.addTransceiver('audio', { direction: 'recvonly' });
+        OnTrack(pc)
+    }
     if(bVideo) {
         if(!bDecodeH264){
            initH265DC(pc,player);
@@ -35,11 +40,6 @@ function getStreamWebrtc(player) {
             const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
             OnTrack(pc)
         }
-    }
-    if(bAudio) {
-    // initAudioDC(pc);
-        const { receiveraudio } = pc.addTransceiver('audio', { direction: 'recvonly' });
-        OnTrack(pc)
     }
 	// Populate SDP field when finished gathering
 	pc.oniceconnectionstatechange = e => {

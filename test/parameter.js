@@ -91,3 +91,15 @@ var ICEServerkvm = [
         credential: "123456"
     }
 ];
+var ICEServermetaRTC = [
+    {
+        //urls:["stun:stun.l.google.com:19302"]
+        urls: ["stun:192.168.0.18:3478"]
+        //urls: ["stun:192.168.0.20:3478"]
+    }, {
+        urls: ["turn:192.168.0.18:3478"],
+        //urls: ["turn:192.168.0.20:3478"],
+        username: "media",
+        credential: "123456"
+    }
+];

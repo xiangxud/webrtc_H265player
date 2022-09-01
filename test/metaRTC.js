@@ -134,33 +134,28 @@
         }
     }
 };
-function StartMetaRTC(url,player){
+
+var datachannel=null;
+function StartMetaRTC(url){
     var conf = __internal.prepareUrl(url);
     pc = new RTCPeerConnection({
-        iceServers: ICEServerkvm,//ICEServer
+        iceServers: ICEServermetaRTC
 });
 
-if(bVideo) {
-
-        const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
-        OnTrack(pc)
-    
-}
 if(bAudio) {
 
     const { receiveraudio } = pc.addTransceiver('audio', { direction: 'recvonly' });
     OnTrack(pc)
 }
+if(bVideo) {
+
+    const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
+    OnTrack(pc)
+
+}
 // Populate SDP field when finished gathering
 pc.oniceconnectionstatechange = e => {
     log(pc.iceConnectionState)
-
-            var state ={
-                t: kconnectStatusResponse,
-                s: pc.connectionState
-            }
-            player.postMessage(state)
-
 }
 
 pc.onicecandidate = event => {
@@ -171,32 +166,41 @@ pc.onicecandidate = event => {
                 clientip: null, sdp: offer.sdp
             };
             console.log("Generated offer: ", data);
-            Ajax.post(conf.apiUrl, offer.sdp+"}", function(res){
-                	console.log('返回的数据:',res)
-                    pc.setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: res.sdp}));
-                    // await self.pc.setRemoteDescription(
-                    //     new RTCSessionDescription({type: 'answer', sdp: session.sdp})
-                    // );
-                	// ....
-                })
-            // ajax({
-            //         type: "POST", url: conf.apiUrl, data: offer.sdp+"}",
-            //          contentType:'text/plain', dataType: 'json',
-            //         crossDomain:true         
-            //     }).done(function(data) {
-                   
-            //         if (data.code) {
-            //             reject(data); return;
-            //         }
-            //     	console.log("Got sdp: ", data.sdp);
-            //         resolve(data);
-                    
-            //     }).fail(function(reason){
-            //         reject(reason);
-            //     });
+
+            ajax({ 
+                type:"POST", 
+                url:conf.apiUrl, 
+                dataType:"json", 
+                data:offer.sdp+"}", 
+                beforeSend:function(){ 
+                  //some js code 
+                }, 
+                success:function(msg){ 
+                  console.log(msg) 
+                  pc.setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: msg.sdp}));
+                }, 
+                error:function(){ 
+                  console.log("error") 
+                } 
+              }) 
+
         }
     }
+	datachannel=self.pc.createDataChannel('chat');
 
+	datachannel.onopen = function(event) {
+		console.log("datachannel onopen: ", event);
+	}
+	datachannel.onmessage = function(event) {
+	  console.log("receive message: ", event.data);
+	//   $('#datachannel_recv').val(event.data);
+	}
+	datachannel.onerror=function(event) {
+	  console.log("datachannel error: ", event.data);
+	}
+	datachannel.onclose=function(event) {
+	  console.log("datachannel close: ");
+	}
 pc.createOffer().then(d => pc.setLocalDescription(d)).catch(log)   
 
 }

@@ -10,7 +10,7 @@ function startPlay(url) {
     alert("url is null")
      return;
    } 
-   StartMetaRTC(url,player)
+   StartMetaRTC(url)
 //     // Close PC when user replay.
 //     if (sdk) {
 //         sdk.close();
