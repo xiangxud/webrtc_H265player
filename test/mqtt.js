@@ -28,6 +28,7 @@ function OnTrack(pc){
             el.height = canvas.height;
             el.autoplay = true;
             el.id = 'metaRTCVideo';
+            canvas.style.display="none";
         }
         el.srcObject = event.streams[0];
         el.autoplay = true;
@@ -53,6 +54,7 @@ function getStreamWebrtc(player) {
            initH265DC(pc,player);
         }else{
             const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
+            receivervideo.playoutDelayHint = 0.0;
             OnTrack(pc)
         }
     }
