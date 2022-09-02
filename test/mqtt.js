@@ -7,6 +7,15 @@ var t = Date.now();
 function sleep(d){
 	while(Date.now - t <= d);
 }
+// function CreateVideoDiv(el){
+// var parentDiv = document.createElement("div");//创建父div
+// // var parentDiv = document.getElementById('playCanvas')
+// parentDiv.className="webrtcPlayer";//给父div设置class属性
+// el.className="video";
+// el.setAttribute("id","remote-video");
+// parentDiv.appendChild(el);
+// window.document.body.appendChild(parentDiv);
+// }
 var bisOntrack = false;
 function OnTrack(pc){
     if(bisOntrack) return;
@@ -14,21 +23,14 @@ function OnTrack(pc){
     pc.ontrack = function (event) {
         console.log("ontrack", event.track.kind)
         var el = document.createElement(event.track.kind);
-        document.body.appendChild(el);
+        // document.body.appendChild(el);
 
 //属性width height autoplay id type src，也可以通过userVideo.setAttribute('type','video/mp4');来设置
         if(event.track.kind==="video"){
-            const canvasId = "playCanvas";
-            canvas = document.getElementById(canvasId);
-            var offsetY = canvas.offsetTop;
-            var offsetX = canvas.offsetLeft;
-            el.offsetTop = offsetY;
-            el.offsetLeft = offsetX;
-            el.width = canvas.width;
-            el.height = canvas.height;
-            el.autoplay = true;
-            el.id = 'metaRTCVideo';
-            canvas.style.display="none";
+            CreateVideoDiv(el);
+            // window.document.body.appendChild(el);
+        }else if(event.track.kind==="audio"){
+            window.document.body.appendChild(el);
         }
         el.srcObject = event.streams[0];
         el.autoplay = true;
@@ -37,6 +39,36 @@ function OnTrack(pc){
         // el.autoplay = true;
         }
 }
+// function OnTrack(pc){
+//     if(bisOntrack) return;
+//     bisOntrack=true;
+//     pc.ontrack = function (event) {
+//         console.log("ontrack", event.track.kind)
+//         if(event.track.kind==="video"){
+//         trackCache = event.track;
+    
+//         var el = document.getElementById('playCanvas')
+//         resStream = event.streams[0].clone()
+//         resStream.addTrack(trackCache)
+//         el.srcObject = resStream
+//         // KeyMouseCtrl()
+        
+//         }else{
+//         var el = document.createElement(event.track.kind);
+//         el.srcObject = event.streams[0];
+//         el.autoplay = true;
+//         document.getElementById("playCanvas").appendChild(el);
+        
+//           if (el.nodeName === "AUDIO") {
+//             el.oncanplay = () => {
+//                 el.controls = false; // 显示
+//                 el.autoplay = true;
+//             };
+//         }
+//     }   
+//   }
+// }
+
 function getStreamWebrtc(player) {
 
 
@@ -46,27 +78,30 @@ function getStreamWebrtc(player) {
     // initH265Transfer(pc,player);
     if(bAudio) {
     // initAudioDC(pc);
-        const { receiveraudio } = pc.addTransceiver('audio', { direction: 'recvonly' });
+        pc.addTransceiver('audio', { direction: 'recvonly' });
         OnTrack(pc)
     }
     if(bVideo) {
         if(!bDecodeH264){
+            media_mode= "h265";
            initH265DC(pc,player);
         }else{
-            const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
-            receivervideo.playoutDelayHint = 0.0;
+            media_mode= "h264";
+            pc.addTransceiver('video', { direction: 'recvonly' });
+            // receivervideo.playoutDelayHint = 0;
             OnTrack(pc)
         }
     }
 	// Populate SDP field when finished gathering
 	pc.oniceconnectionstatechange = e => {
         log(pc.iceConnectionState)
-
+        if(!bDecodeH264){
                 var state ={
                     t: kconnectStatusResponse,
                     s: pc.connectionState
                 }
                 player.postMessage(state)
+        }
 
     }
 
@@ -89,6 +124,8 @@ function getStreamWebrtc(player) {
                         }
                         msgdata["rtspaddr"] = rtspaddr;//document.getElementById("rtspId").value //KVMRTSPADDR;
                     }
+                    msgdata["resolution"]=p_Resolution;//document.getElementById("resolutionId").value;
+                    
                 }
                 if (bAudio) {
                     msgdata["audio"] = true;
@@ -170,7 +207,9 @@ initMqtt = function(player) {
 
                     let answer = JSON.parse(answerjsonstr);
                     console.log("answer:",answer);
-
+                    for (const receiver of pc.getReceivers()) {
+                        receiver.playoutDelayHint = 0;
+                      }
                     pc.setRemoteDescription(new RTCSessionDescription(answer));
                     // btnOpen();
                 } catch (e) {

@@ -35,9 +35,20 @@
                     <option value="ws">WS</option>
                     <option value="httpFlv">HTTP-FLV</option>
                 </select>
-                <input type="text" id="inputUrl" value="webrtc://192.168.0.18:1988/live/livestream" style="width:300px"/>
-                设 备  名 称: <input type="text"  name="devicename" id="deviceId" value="4E:7B:BF:71:D6:B4" style="width:100px"/>
-                拉 流  名 称: <input type="text"  name="streamname" id="streamId" value="metartc" style="width:100px"/>
+                <input type="text" id="inputUrl" value="webrtc://192.168.0.18:1988/live/livestream" style="width:240px"/>
+                <select id="decodeType" onchange="onSelectDecode()">
+                    <option value="H264">H264</option>
+                    <option value="H265">H265</option>
+                </select>
+                <select id="resolutionId" onchange="onSelectResolution()">
+                    <option value="1080">F_1080</option>
+                    <option value="720">F_720</option>
+                    <option value="540">F_540</option>
+                    <option value="360">F_360</option>                                       
+                </select>                
+                设备名称: <input type="text"  name="devicename" id="deviceId" value="4E:7B:BF:71:D6:B4" style="width:80px"/>
+                拉流名称: <input type="text"  name="streamname" id="streamId" value="metartc" style="width:80px"/>
+
             </div>
         </div>
         <div class="canvasDiv">
@@ -80,7 +91,7 @@
                     </video>
                 </div>
             </div> -->
-              
+               <!-- <video id="playCanvas" width="1920" height="1080"></video> -->
               <canvas id="playCanvas" width="1920" height="1080"></canvas>
             <!-- </div> -->
         </div>

@@ -11,23 +11,32 @@ function startPlay(url) {
      return;
    } 
    StartMetaRTC(url)
-//     // Close PC when user replay.
-//     if (sdk) {
-//         sdk.close();
-//     }
-//     sdk = new SrsRtcPlayerAsync();
 
-//     // https://webrtc.org/getting-started/remote-streams
-//     // $('#rtc_media_player').prop('srcObject', sdk.stream);
-// //         var url = $("#txt_url").val();
-// //    // parse_webrtc(url);
-//     sdk.play(url.value).then(function(session){
-//          console.log("play url ",url.value);
-//         //  $('#datachannel_form').show();
-//     }).catch(function (reason) {
-//         sdk.close();
-//     });
 };
+function onSelectDecode(){
+    var decodetype=document.getElementById("decodeType");
+    if(decodetype.value==="H264"){
+        bDecodeH264=true;
+    }else{
+        bDecodeH264=false;
+    }
+}
+function onSelectResolution() {
+    // switch resolution {
+    //     case "1080":
+    //         resolut = 1
+    //     case "720":
+    //         resolut = 2
+    //     case "540":
+    //         resolut = 3
+    //     case "360":
+    //         resolut = 4
+    //     default:
+    //         resolut = 2
+    //     }
+    var resolution=document.getElementById("resolutionId");    
+    p_Resolution=resolution.value;
+}
 function onSelectProto(){
     var porotocol=document.getElementById("protocol");
     var url=document.getElementById("inputUrl");
@@ -61,7 +70,9 @@ function handleVideo() {
         default:
             return;    
     }
-    player = new Worker("Player.js");
+    if(!bDecodeH264){
+       player = new Worker("Player.js");
+    }  
     // H265transferworker = new Worker ("")
     var el = document.getElementById("btnPlayVideo");
     // var currentState = self.player.getState();
@@ -75,28 +86,30 @@ function handleVideo() {
     //     playAudio();
     // }
     startDeviceSession(player);
-    player.onmessage = function (evt){
-        var objData = evt.data;
-        switch (objData.t) {
-        case kplayeVideoFrame:
-            if(DECODER_TYPE===kDecoder_missile_decoder_js){
-                missle_renderFrame(objData.d)
-            }else{
-              webgldisplayVideoFrame(objData.d);
-            }
-            break;
-        case kplaterNetStatus:
-            netstatus(objData.s)
-            break;    
-        default:
-            break;
-        }    
+    if(!bDecodeH264){
+        player.onmessage = function (evt){
+            var objData = evt.data;
+            switch (objData.t) {
+            case kplayeVideoFrame:
+                if(DECODER_TYPE===kDecoder_missile_decoder_js){
+                    missle_renderFrame(objData.d)
+                }else{
+                webgldisplayVideoFrame(objData.d);
+                }
+                break;
+            case kplaterNetStatus:
+                netstatus(objData.s)
+                break;    
+            default:
+                break;
+            }    
+        }
+        var req = {
+            t: kstartPlayerCoderReq,
+            decoder_type: DECODER_TYPE
+        };
+        player.postMessage(req);
     }
-    var req = {
-        t: kstartPlayerCoderReq,
-        decoder_type: DECODER_TYPE
-    };
-    player.postMessage(req);
     el.src = "img/pause.png";
 
 }
@@ -106,12 +119,14 @@ function netstatus(status){
    }
 }
 function stopDecoder(){
+    if(bDecodeH264) return;
     var req = {
         t: kendPlayerCoderReq,
     };
     player.postMessage(req);
 }
 function stopVideo(){
+
     stopDecoder();
     endWebrtc();
     endMqtt();
@@ -124,6 +139,10 @@ function stopVideo(){
 }
 
 function fullscreen(){
+    if(bDecodeH264){
+        FullScreen();
+         return;
+    }
     if(!webglPlayer) {
         const canvasId = "playCanvas";
         canvas = document.getElementById(canvasId);
@@ -136,63 +155,7 @@ function fullscreen(){
 //用missle解码器
 // var USE_MISSILE = false;
 var webt1=new Date().getTime();
-// function webgldisplayVideoFrame(obj) {
-//     switch(DECODER_TYPE){
 
-//     //     // var obj = {
-//     //     //     data: y,u,v,
-//     //     //     stride_y, stride_u, stride_v, 
-//     //     //     width,
-//     //     //     height
-//     //     // }
-//     //     // WebGLPlayer.prototype.renderFrameyuv = function ( 
-//     //     //     videoFrameY, videoFrameB, videoFrameR,
-//     //     //     width, height)
-//     //     var videoFrameY =  new Uint8Array(obj.y);
-//     //     var videoFrameB =  new Uint8Array(obj.u);
-//     //     var videoFrameR =  new Uint8Array(obj.v);
-//     //     var width = obj.width;
-//     //     var height = obj.height;
-//     //     if(!webglPlayer) {
-//     //         const canvasId = "playCanvas";
-//     //         canvas = document.getElementById(canvasId);
-//     //         webglPlayer = new WebGLPlayer(canvas, {
-//     //             preserveDrawingBuffer: false
-//     //         });
-//     //     }
-    
-//     //     const t2=new Date().getTime()-webt1;   
-//     //     console.log("display time:"+t2+" width:"+width+" height"+height);    
-//     //     webglPlayer.renderFrameyuv( 
-//     //             videoFrameY, videoFrameB, videoFrameR,
-//     //             width, height);
-//     //    webt1 = new Date().getTime()      
-//     //    break;        
-    
-//     case kDecoder_decodeer_js:
-//     case kDecoder_prod_h265_wasm_combine_js:
-//         var data = new Uint8Array(obj.data);
-//         var width = obj.width;
-//         var height = obj.height;
-//         var yLength = width * height;
-//         var uvLength = (width / 2) * (height / 2);
-//         if(!webglPlayer) {
-//             const canvasId = "playCanvas";
-//             canvas = document.getElementById(canvasId);
-//             webglPlayer = new WebGLPlayer(canvas, {
-//                 preserveDrawingBuffer: false
-//             });
-//         }
-
-//         const t2=new Date().getTime()-webt1;
-//         console.log("display time:"+t2+" width:"+width+" height"+height+" yLength"+yLength+" uvLength"+uvLength);
-//         webglPlayer.renderFrame(data, width, height, yLength, uvLength);
-//         webt1 = new Date().getTime();
-//     default:
-
-//         break;
-//    }
-// }
 function webgldisplayVideoFrame(obj) {
     var data = new Uint8Array(obj.data);
     var width = obj.width;
