@@ -43,7 +43,7 @@ function onSelectProto(){
     switch(porotocol.value){
         case "webrtc":
         url.value="webrtc://192.168.0.4:1988/live/livestream"
-        startPlay(url);
+        // startPlay(url);
         break;
         case "mqtt":
             url.value="ws://192.168.0.18:8083/mqtt"
