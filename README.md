@@ -4,6 +4,7 @@
 总体流程如下：
 ![Decode With FFmpeg and WASM](./doc/wasm.jpg "页面通过wasm调用FFmpeg流程图")
 
+该分支适配了强大的m7s流媒体服务器的v3版本的webrtc插件,地址:[https://github.com/xiangxud/plugin-webrtc](https://github.com/xiangxud/plugin-webrtc), 该插件做了一定的改动适配前端解码播放,增加了v3_h265分支,与该项分支联调播放
 # 2 依赖
 
 ## 2.1 [WebAssembly (Wasm)](https://webassembly.org/)
