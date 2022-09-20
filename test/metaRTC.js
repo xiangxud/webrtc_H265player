@@ -1,6 +1,7 @@
    // Internal APIs.
    var  __internal = {
     defaultPath: '/rtc/v1/play/',
+    // defaultPath: '/api/webrtc/playpro',
     prepareUrl: function (webrtcUrl) {
         var urlObject = self.__internal.parse(webrtcUrl);
         var schema="http:";
@@ -136,47 +137,75 @@
 };
 
 var datachannel=null;
-function StartMetaRTC(url){
+function StartMetaRTC(url,player){
     var conf = __internal.prepareUrl(url);
-    pc = new RTCPeerConnection({
-        iceServers: ICEServermetaRTC
-});
 
-if(bAudio) {
+    pc = new RTCPeerConnection(null);
 
-    const { receiveraudio } = pc.addTransceiver('audio', { direction: 'recvonly' });
-    OnTrack(pc)
-}
-if(bVideo) {
+    // if(bAudio) {
 
-    const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
-    OnTrack(pc)
+    //     const { receiveraudio } = pc.addTransceiver('audio', { direction: 'recvonly' });
+    //     OnTrack(pc)
+    // }
+    if(bVideo) {
+        initH265DC(pc,player);
+        if(!bDecodeH264){
+            media_mode= "h265";
+            // H265transferworker = new Worker ("")
+        }else{
+            media_mode= "h264";            
+        }
+        const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
+        // OnTrack(pc)
 
-}
-// Populate SDP field when finished gathering
-pc.oniceconnectionstatechange = e => {
-    log(pc.iceConnectionState)
-}
+    }
 
-pc.onicecandidate = event => {
+
+    // Populate SDP field when finished gathering
+    pc.oniceconnectionstatechange = e => {
+        log(pc.iceConnectionState)
+        if(!bDecodeH264){
+            var state ={
+                t: kconnectStatusResponse,
+                s: pc.connectionState
+            }
+            player.postMessage(state)
+        }
+    }
+
+    pc.onicecandidate = event => {
         if (event.candidate === null) {
             var offer=pc.localDescription
             var data = {
-                api: conf.apiUrl, tid: conf.tid, streamurl: conf.streamUrl,
-                clientip: null, sdp: offer.sdp
+                api: conf.apiUrl, 
+                tid: conf.tid, 
+                streamurl: conf.streamUrl,
+                clientip: null, 
+                sdp: offer.sdp,
+                // type: "answer"
+                type: "offer"
             };
             console.log("Generated offer: ", data);
+            console.log("Generated conf: ", conf);
 
             ajax({ 
                 type:"POST", 
-                url:conf.apiUrl, 
+                // url:conf.apiUrl+conf.urlObject.app+"/"+conf.urlObject.stream, 
+                url:conf.streamUrl, 
                 dataType:"json", 
-                data:offer.sdp+"}", 
+                data:JSON.stringify(data), 
                 beforeSend:function(){ 
                   //some js code 
                 }, 
                 success:function(msg){ 
-                  console.log(msg) 
+                  if(!msg.isH265){
+                     media_mode= "h264";
+                     bDecodeH264 = true
+                     stopH265()
+                     OnTrack(pc)
+                  }else{
+                    CreateCanvas()
+                  }
                   pc.setRemoteDescription(new RTCSessionDescription({type: 'answer', sdp: msg.sdp}));
                 }, 
                 error:function(){ 
@@ -186,22 +215,9 @@ pc.onicecandidate = event => {
 
         }
     }
-	datachannel=self.pc.createDataChannel('chat');
+    
+    pc.createOffer().then(d => pc.setLocalDescription(d)).catch(log)   
 
-	datachannel.onopen = function(event) {
-		console.log("datachannel onopen: ", event);
-	}
-	datachannel.onmessage = function(event) {
-	  console.log("receive message: ", event.data);
-	//   $('#datachannel_recv').val(event.data);
-	}
-	datachannel.onerror=function(event) {
-	  console.log("datachannel error: ", event.data);
-	}
-	datachannel.onclose=function(event) {
-	  console.log("datachannel close: ");
-	}
-pc.createOffer().then(d => pc.setLocalDescription(d)).catch(log)   
 
 }
 

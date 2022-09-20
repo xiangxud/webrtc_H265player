@@ -6,21 +6,43 @@ var sdk = null; // Global handler to do cleanup when replaying.
 // var DECODER_TYPE = kDecoder_prod_h265_wasm_combine_js;
 function startPlay(url) {
        
-   if(url===undefined||url.value===""){
-    alert("url is null")
-     return;
-   } 
-   StartMetaRTC(url)
+    if(url===undefined||url.value===""){
+        alert("url is null")
+        return;
+    }
+    player = new Worker("Player.js");
+ 
+    var el = document.getElementById("btnPlayVideo");
+    StartMetaRTC(url,player)
+
+
+    player.onmessage = function (evt){
+        var objData = evt.data;
+        switch (objData.t) {
+        case kplayeVideoFrame:
+            if(DECODER_TYPE===kDecoder_missile_decoder_js){
+                missle_renderFrame(objData.d)
+            }else{
+                webgldisplayVideoFrame(objData.d);
+            }
+            break;
+        case kplaterNetStatus:
+            netstatus(objData.s)
+            break;    
+        default:
+            break;
+        }    
+    }
+    var req = {
+        t: kstartPlayerCoderReq,
+        decoder_type: DECODER_TYPE
+    };
+    player.postMessage(req);
+
+    el.src = "img/pause.png";
 
 };
-function onSelectDecode(){
-    var decodetype=document.getElementById("decodeType");
-    if(decodetype.value==="H264"){
-        bDecodeH264=true;
-    }else{
-        bDecodeH264=false;
-    }
-}
+
 function onSelectResolution() {
     // switch resolution {
     //     case "1080":

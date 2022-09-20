@@ -9,8 +9,19 @@ function CreateVideoDiv(el){
     // el.offsetTop=parentDiv.offsetTop+50;
     el.setAttribute("id","remote-video");
     parentDiv.appendChild(el);
-    window.document.body.appendChild(parentDiv);
+    body = document.getElementsByClassName("canvasDiv")[0]
+    // window.document.body.appendChild(parentDiv);
+    body.appendChild(parentDiv);
 }
+function CreateCanvas(){
+    var parentDiv = document.createElement("canvas");//创建父div
+    parentDiv.setAttribute("width",1920)
+    parentDiv.setAttribute("height",1080)
+    parentDiv.id = "playCanvas"
+    body = document.getElementsByClassName("canvasDiv")[0]
+    body.appendChild(parentDiv);
+}
+
 function FullScreen() {
 
         var ele = document.getElementById("remote-video");

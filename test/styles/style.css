@@ -29,7 +29,7 @@
     display: block;
     
     }
-.webrtcPlayer {
+/*.webrtcPlayer {
     width: 848px;
     height: 448px;
     background-color: rgb(14, 13, 13);
@@ -38,6 +38,17 @@
     left: 50%;
     top: 51.5%;
     transform: translate(-50%,-50%);
+    z-index: 10;
+}*/
+.webrtcPlayer {
+    width: 852px;
+    height: 480px;
+    background-color: rgb(14, 13, 13);
+    border: 2px solid rgba(0, 0, 0, 0.9);
+    /* position: absolute; */
+    /* left: 50%; */
+    /* top: 51.5%; */
+    /* transform: translate(-50%,-50%); */
     z-index: 10;
 }
 #videoPlayer {
