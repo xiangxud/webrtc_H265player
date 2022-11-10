@@ -1,7 +1,7 @@
 echo "Beginning Build:"
 rm -r ffmpeg
 mkdir -p ffmpeg
-cd ../FFmpeg
+cd ../ffmpeg
 make clean
 emconfigure ./configure --cc="emcc" --cxx="em++" --ar="emar" --prefix=$(pwd)/../webrtc_H265player/ffmpeg --enable-cross-compile --target-os=none --arch=x86_32 --cpu=generic \
     --enable-gpl --enable-version3 --disable-avdevice --disable-avformat --disable-swresample --disable-postproc --disable-avfilter \

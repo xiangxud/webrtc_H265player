@@ -4,13 +4,13 @@ var player=null;
 var sdk = null; // Global handler to do cleanup when replaying.
 // var DECODER_TYPE = kDecoder_decodeer_js;
 // var DECODER_TYPE = kDecoder_prod_h265_wasm_combine_js;
-function startPlay(url) {
+function startPlay(url,player) {
        
    if(url===undefined||url.value===""){
     alert("url is null")
      return;
    } 
-   StartMetaRTC(url)
+   StartMetaRTC(url,player)
 
 };
 function onSelectDecode(){
@@ -59,20 +59,28 @@ function handleVideo() {
         alert("Please input your url addr");
         return;
     }
+    if(!bDecodeH264){
+        player = new Worker("Player.js");
+     }  
     switch(porotocol.value){
         case "webrtc":
-        
-           startPlay(url.value);
-           return;
+           startPlay(url.value,player);
+           if(!bDecodeH264)
+           {
+                break;
+           }
+           else
+           {
+                return;
+           }
         case "mqtt":
             MqttServer=url.value;
+            startDeviceSession(player);
             break;
         default:
             return;    
     }
-    if(!bDecodeH264){
-       player = new Worker("Player.js");
-    }  
+   
     // H265transferworker = new Worker ("")
     var el = document.getElementById("btnPlayVideo");
     // var currentState = self.player.getState();
@@ -85,7 +93,7 @@ function handleVideo() {
     //     setAudioDecoder(1) //mse 0 contex
     //     playAudio();
     // }
-    startDeviceSession(player);
+    
     if(!bDecodeH264){
         player.onmessage = function (evt){
             var objData = evt.data;

@@ -136,11 +136,9 @@
 };
 
 var datachannel=null;
-function StartMetaRTC(url){
+function StartMetaRTC(url,player){
     var conf = __internal.prepareUrl(url);
-    pc = new RTCPeerConnection({
-        iceServers: ICEServermetaRTC
-});
+    pc = new RTCPeerConnection(null);
 
 if(bAudio) {
 
@@ -148,14 +146,28 @@ if(bAudio) {
     OnTrack(pc)
 }
 if(bVideo) {
-
-    const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
-    OnTrack(pc)
+    if(!bDecodeH264){
+       media_mode= "h265";
+       pc.addTransceiver('video', { direction: 'recvonly' });
+       initH265DC(pc,player);
+    }
+    else
+    {
+        const { receivervideo } = pc.addTransceiver('video', { direction: 'recvonly' });
+        OnTrack(pc)
+    }
 
 }
 // Populate SDP field when finished gathering
 pc.oniceconnectionstatechange = e => {
     log(pc.iceConnectionState)
+    if(!bDecodeH264){
+        var state ={
+            t: kconnectStatusResponse,
+            s: pc.connectionState
+        }
+        player.postMessage(state)
+}
 }
 
 pc.onicecandidate = event => {
@@ -186,21 +198,24 @@ pc.onicecandidate = event => {
 
         }
     }
-	datachannel=self.pc.createDataChannel('chat');
+    if(bDecodeH264)
+    {
+        datachannel=self.pc.createDataChannel('chat');
 
-	datachannel.onopen = function(event) {
-		console.log("datachannel onopen: ", event);
-	}
-	datachannel.onmessage = function(event) {
-	  console.log("receive message: ", event.data);
-	//   $('#datachannel_recv').val(event.data);
-	}
-	datachannel.onerror=function(event) {
-	  console.log("datachannel error: ", event.data);
-	}
-	datachannel.onclose=function(event) {
-	  console.log("datachannel close: ");
-	}
+        datachannel.onopen = function(event) {
+            console.log("datachannel onopen: ", event);
+        }
+        datachannel.onmessage = function(event) {
+        console.log("receive message: ", event.data);
+        //   $('#datachannel_recv').val(event.data);
+        }
+        datachannel.onerror=function(event) {
+        console.log("datachannel error: ", event.data);
+        }
+        datachannel.onclose=function(event) {
+        console.log("datachannel close: ");
+        }
+    }
 pc.createOffer().then(d => pc.setLocalDescription(d)).catch(log)   
 
 }
