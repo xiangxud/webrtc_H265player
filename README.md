@@ -1,3 +1,10 @@
+receive annexb from server or device use webrtc datachannel push to ffmpeg decode yuv then webgl display
+main branch not simd
+develop branch simd ffmpeg
+p2p branch for embedded webrtc metartc
+zlm branch for zlmmedia server 
+m7s branch for m7s mediaserver
+webcodecs mse decoder contact to me
 # 1 简介
 
 借助于WebAssembly(简称Wasm)技术，实现在浏览器端调用ffmpeg接口完成H.265码流到YUV数据的解码。
